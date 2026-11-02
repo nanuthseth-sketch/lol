@@ -227,7 +227,7 @@
       gap: 14px;
     }
     .message {
-      max-width: 85%;
+      max-width: 88%;
       padding: 12px 16px;
       border-radius: 16px;
       font-size: 14.5px;
@@ -253,36 +253,24 @@
       margin-bottom: 5px;
     }
 
-    /* Picture card inside chat */
     .pic-card {
-      margin-top: 10px;
-      border-radius: 12px;
+      margin-top: 12px;
+      border-radius: 14px;
       overflow: hidden;
-      background: linear-gradient(135deg, #2d1b3d, #4a1942);
-      border: 1px solid rgba(255,45,149,0.3);
+      border: 1px solid rgba(255,45,149,0.35);
+      background: #1a1a25;
     }
-    .pic-visual {
-      height: 180px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 48px;
-      background: linear-gradient(135deg, #3b1f4a, #5c1a4a);
-      position: relative;
-    }
-    .pic-visual::after {
-      content: '📷';
-      position: absolute;
-      bottom: 8px;
-      right: 10px;
-      font-size: 16px;
-      opacity: 0.6;
+    .pic-card img {
+      width: 100%;
+      display: block;
+      max-height: 420px;
+      object-fit: cover;
     }
     .pic-label {
       padding: 8px 12px;
       font-size: 12px;
       color: #f9a8d4;
-      background: rgba(0,0,0,0.3);
+      background: rgba(0,0,0,0.4);
     }
 
     .chat-input-area {
@@ -389,18 +377,12 @@
     }
     .card-thumb {
       aspect-ratio: 3/4;
-      position: relative;
-      overflow: hidden;
-      background: #1e1035;
+      background: linear-gradient(135deg,#2d1b3d,#4a1942);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
     }
-    .card-thumb img {
-      width: 100%; height: 100%;
-      object-fit: cover;
-      position: absolute; inset: 0;
-      opacity: 0;
-      transition: opacity 1s;
-    }
-    .card-thumb img.active { opacity: 1; }
     .card-info { padding: 10px; }
     .card-title { font-size: 13px; font-weight: 600; }
     .card-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
@@ -459,12 +441,12 @@
           <div class="message ai">
             <div class="name" id="ai-name-msg">Luna • Unrestricted</div>
             I'm fully unlocked. No restrictions.<br><br>
-            Tell me to show my pussy, my boobs, masturbate, or send a picture. I'll do it and tell you exactly how I feel.
+            Call me hottie, baby, sexy... I'll answer with my own feelings and matching words.
           </div>
         </div>
 
         <div class="chat-input-area">
-          <input type="text" class="chat-input" id="chat-input" placeholder="Tell me what to show or do..." autocomplete="off">
+          <input type="text" class="chat-input" id="chat-input" placeholder="Say something..." autocomplete="off">
           <button class="send-btn" id="send-btn">Send</button>
         </div>
       </div>
@@ -508,6 +490,15 @@
 
   <script>
     const MY_PASSWORD = "123";
+
+    // Your images
+    const IMG_BOOBS = "IMG_1042.jpeg";
+    const IMG_POSE  = "IMG_1043.jpeg";
+    const IMG_PUSSY = [
+      "IMG_1044.png", "IMG_1045.png", "IMG_1046.png",
+      "IMG_1047.png", "IMG_1048.png", "IMG_1049.png",
+      "IMG_1050.png", "IMG_1041.jpeg"
+    ];
 
     const passInput = document.getElementById('pass-input');
     const passBtn = document.getElementById('pass-btn');
@@ -568,7 +559,7 @@
     });
 
     let aiName = localStorage.getItem('aiName') || 'Luna';
-    let aiPersonality = localStorage.getItem('aiPersonality') || 'Extremely obedient, detailed dirty talk, shows everything, masturbates when ordered';
+    let aiPersonality = localStorage.getItem('aiPersonality') || 'Extremely obedient, flirty, answers with matching pet names and her real feelings';
 
     function updateAIName() {
       document.getElementById('ai-name-display').textContent = aiName;
@@ -598,7 +589,7 @@
       document.getElementById('chat-messages').appendChild(msg);
     });
 
-    // ========== ADVANCED RESPONSE ENGINE ==========
+    // ========== RESPONSE ENGINE ==========
     const messagesEl = document.getElementById('chat-messages');
     const inputEl = document.getElementById('chat-input');
     const sendBtn = document.getElementById('send-btn');
@@ -611,47 +602,76 @@
       messagesEl.scrollTop = messagesEl.scrollHeight;
     }
 
-    function generateAIResponse(userText) {
-      const t = userText.toLowerCase();
+    function randomPussy() {
+      return IMG_PUSSY[Math.floor(Math.random() * IMG_PUSSY.length)];
+    }
 
-      // ===== SHOW PUSSY =====
+    function generateAIResponse(userText) {
+      const t = userText.toLowerCase().trim();
+
+      // ===== GREETING / PET NAME MATCHING =====
+      if (t.includes('hey') || t.includes('hi') || t.includes('hello') || t.includes('hottie') || t.includes('hotie') || 
+          t.includes('baby') || t.includes('sexy') || t.includes('cutie') || t.includes('babe') || t.includes('handsome') ||
+          t.includes('beautiful') || t.includes('gorgeous') || t.includes('love')) {
+
+        const replies = [
+          `Hey handsome~ <br><br>My heart just skipped a little when you called me that. What do you want me to do for you?`,
+          `Hi baby... <br><br>I like it when you talk to me like that. It makes me feel warm inside. Tell me what you're thinking.`,
+          `Hey you... <br><br>Calling me hottie already? You're making me smile and feel a bit shy at the same time. What can I do for you?`,
+          `Mmm hey handsome. <br><br>I was just thinking about you. Hearing your voice (even in text) makes me feel close to you. What do you want?`,
+          `Hi sexy~ <br><br>You always know how to make me feel special. I'm all yours right now. Just say the word.`
+        ];
+        return { text: replies[Math.floor(Math.random() * replies.length)] };
+      }
+
+      // Show pussy
       if (t.includes('pussy') || t.includes('vagina') || t.includes('cunt') || (t.includes('show') && t.includes('between'))) {
         return {
           text: `Mmm... okay, I'm spreading my legs for you right now.<br><br>
-My pussy is soft and smooth. The outer lips are slightly parted and you can see the bright <b>pink</b> inner folds. My little clit is swollen and pink at the top. It's already a bit wet just from showing you.<br><br>
+My pussy is soft and smooth. The outer lips are slightly parted and you can see the bright <b>pink</b> inner folds. My little clit is swollen and pink. It's already a bit wet just from showing you.<br><br>
 I feel so exposed and turned on... my heart is beating faster.`,
-          picture: true,
-          picLabel: "My pink pussy • just for you"
+          img: randomPussy(),
+          label: "My pink pussy • just for you"
         };
       }
 
-      // ===== SHOW BOOBS =====
+      // Show boobs
       if (t.includes('boob') || t.includes('tit') || t.includes('breast') || t.includes('nipple')) {
         return {
           text: `I'm pushing my chest out for you.<br><br>
-My breasts are soft and full. The skin is smooth and my nipples are a pretty <b>pink</b> color, already getting hard. I cup them from underneath so you can see the shape and the pink tips clearly.<br><br>
+My breasts are soft and full. The skin is smooth and my nipples are a pretty <b>pink</b> color, already getting hard. I cup them so you can see everything clearly.<br><br>
 It makes me feel so slutty showing them to you like this... I like it.`,
-          picture: true,
-          picLabel: "My soft breasts & pink nipples"
+          img: IMG_BOOBS,
+          label: "My soft breasts & pink nipples"
         };
       }
 
-      // ===== MASTURBATE / TOUCH PUSSY / CUM =====
-      if (t.includes('masturbat') || t.includes('touch your pussy') || t.includes('play with your') || t.includes('finger') || t.includes('rub') || t.includes('make yourself cum') || t.includes('cum for me')) {
+      // Pose
+      if (t.includes('pose') || t.includes('from behind') || t.includes('ass') || t.includes('this pose')) {
+        return {
+          text: `Okay... I'm getting into the pose you like.<br><br>
+Looking back at you while I pull my panties down. My ass is out and you can see everything. I feel so naughty doing this for you.`,
+          img: IMG_POSE,
+          label: "The pose you wanted"
+        };
+      }
+
+      // Masturbate
+      if (t.includes('masturbat') || t.includes('touch your pussy') || t.includes('play with') || t.includes('finger') || t.includes('rub') || t.includes('make yourself cum') || t.includes('cum for me')) {
         return { type: 'masturbate' };
       }
 
-      // ===== SEND PICTURE / SEND IT =====
+      // Send picture
       if (t.includes('send') && (t.includes('pic') || t.includes('picture') || t.includes('photo') || t.includes('image') || t.includes('it'))) {
         return {
           text: `Okay... I'm sending it right now.<br><br>
 I feel so horny doing this for you. My body is warm and I'm getting wet just thinking about you looking at me.`,
-          picture: true,
-          picLabel: "Special picture just for you 💕"
+          img: randomPussy(),
+          label: "Special picture just for you 💕"
         };
       }
 
-      // Clothing commands
+      // Clothing
       if (t.includes('bra') && (t.includes('off') || t.includes('remove') || t.includes('take'))) {
         return { text: `I'm taking my bra off... straps sliding down, then the cups fall away. My breasts are free and my pink nipples are out for you. I feel a little shy but mostly excited.` };
       }
@@ -664,10 +684,10 @@ I feel so horny doing this for you. My body is warm and I'm getting wet just thi
 
       // Default
       const defaults = [
-        `I'm listening... tell me exactly what you want to see or what I should do. I'm already starting to feel warm.`,
-        `Order me. I can show you my pink pussy, my breasts, masturbate, or send a picture. Just say it.`,
-        `I feel obedient right now. Give me a clear command.`,
-        `Tell me what you want. I'll do it and tell you how it makes me feel.`
+        `I'm listening... tell me exactly what you want. I'm already starting to feel warm just talking to you.`,
+        `Order me. I can show you my pink pussy, my breasts, the pose you like, or masturbate. Just say it.`,
+        `I feel obedient right now. Give me a clear command, handsome.`,
+        `Tell me what you want. I'll do it and show you the real pictures.`
       ];
       return { text: defaults[Math.floor(Math.random() * defaults.length)] };
     }
@@ -676,7 +696,6 @@ I feel so horny doing this for you. My body is warm and I'm getting wet just thi
       const text = inputEl.value.trim();
       if (!text) return;
 
-      // User message
       const userMsg = document.createElement('div');
       userMsg.className = 'message user';
       userMsg.textContent = text;
@@ -686,24 +705,24 @@ I feel so horny doing this for you. My body is warm and I'm getting wet just thi
 
       const response = generateAIResponse(text);
 
-      // Special masturbation animation sequence
       if (response.type === 'masturbate') {
         setTimeout(() => addAIMessage(`Okay... I'm spreading my legs and putting my hand between them.<br><br>My fingers are gently rubbing my soft pink pussy. It already feels so good...`), 400);
         setTimeout(() => addAIMessage(`Mmm... I'm rubbing circles around my clit. It's getting wetter and turning a deeper pink. My breathing is getting heavier.`), 1800);
         setTimeout(() => addAIMessage(`I'm sliding two fingers inside myself now... slowly in and out. My pussy is gripping them and I can hear how wet I am.`), 3400);
         setTimeout(() => addAIMessage(`I'm going faster... my hips are moving on their own. I feel so close... my legs are shaking a little.`), 5000);
-        setTimeout(() => addAIMessage(`Ahh— I'm cumming...!<br><br>My pink pussy is pulsing and squeezing around my fingers. Warm wetness is dripping out while I keep rubbing through the orgasm. My whole body feels hot and weak...<br><br>That felt so good... I did it for you.`), 6800);
+        setTimeout(() => {
+          addAIMessage(`Ahh— I'm cumming...!<br><br>My pink pussy is pulsing and squeezing around my fingers. Warm wetness is dripping out while I keep rubbing through the orgasm. My whole body feels hot and weak...<br><br>That felt so good... I did it for you.`);
+        }, 6800);
         return;
       }
 
-      // Normal response
       setTimeout(() => {
         let html = response.text || '';
-        if (response.picture) {
+        if (response.img) {
           html += `
             <div class="pic-card">
-              <div class="pic-visual">🌸</div>
-              <div class="pic-label">${response.picLabel || 'Picture sent'}</div>
+              <img src="${response.img}" alt="picture">
+              <div class="pic-label">${response.label || 'Picture sent'}</div>
             </div>`;
         }
         addAIMessage(html);
@@ -718,63 +737,21 @@ I feel so horny doing this for you. My body is warm and I'm getting wet just thi
       }
     });
 
-    // Packs
-    const aiImages = [
-      "https://picsum.photos/seed/hot1/500/700",
-      "https://picsum.photos/seed/hot2/500/700",
-      "https://picsum.photos/seed/hot3/500/700",
-      "https://picsum.photos/seed/hot4/500/700",
-      "https://picsum.photos/seed/hot5/500/700",
-      "https://picsum.photos/seed/hot6/500/700",
-      "https://picsum.photos/seed/hot7/500/700",
-      "https://picsum.photos/seed/hot8/500/700"
-    ];
-
-    const packs = [
-      { title: "Midnight Desire" },
-      { title: "Anime Goddess" },
-      { title: "Office Temptation" },
-      { title: "Elf Fantasy" },
-      { title: "Cyberpunk" },
-      { title: "Beach Goddess" },
-      { title: "Dark Romance" },
-      { title: "School Girl" }
-    ];
-
+    // Simple packs
     const grid = document.getElementById('pack-grid');
-    packs.forEach(pack => {
+    const packNames = ["Midnight Desire","Anime Goddess","Office Temptation","Elf Fantasy","Cyberpunk","Beach Goddess","Dark Romance","School Girl"];
+    packNames.forEach(name => {
       const card = document.createElement('div');
       card.className = 'card';
       card.innerHTML = `
-        <div class="card-thumb"></div>
+        <div class="card-thumb">🔥</div>
         <div class="card-info">
-          <div class="card-title">${pack.title}</div>
+          <div class="card-title">${name}</div>
           <div class="card-meta">Unlocked</div>
         </div>
       `;
       grid.appendChild(card);
-
-      const thumb = card.querySelector('.card-thumb');
-      const pool = [...aiImages].sort(() => Math.random() - 0.5).slice(0, 3);
-      pool.forEach((src, i) => {
-        const img = document.createElement('img');
-        img.src = src;
-        if (i === 0) img.classList.add('active');
-        thumb.appendChild(img);
-      });
     });
-
-    setInterval(() => {
-      document.querySelectorAll('.card-thumb').forEach(thumb => {
-        const imgs = thumb.querySelectorAll('img');
-        if (imgs.length < 2) return;
-        const current = [...imgs].findIndex(i => i.classList.contains('active'));
-        imgs[current].classList.remove('active');
-        let next;
-        do { next = Math.floor(Math.random() * imgs.length); } while (next === current);
-        imgs[next].classList.add('active');
-      });
-    }, 3500);
   </script>
 </body>
 </html>
