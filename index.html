@@ -1,757 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>HotHaven.ai — Unlimited</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --bg: #0a0a0f;
-      --sidebar: #12121a;
-      --card: #1a1a25;
-      --accent: #ff2d95;
-      --accent2: #a855f7;
-      --text: #f1f1f5;
-      --muted: #a1a1b5;
-      --border: rgba(255,255,255,0.08);
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      overflow-x: hidden;
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
-
-    #password-gate {
-      position: fixed; inset: 0;
-      background: #0a0a0f;
-      z-index: 10000;
-      display: flex; align-items: center; justify-content: center;
-    }
-    #password-gate.hidden { display: none; }
-    .pass-box {
-      background: #1a1a25;
-      border: 1px solid var(--border);
-      border-radius: 18px;
-      padding: 32px 28px;
-      width: 90%;
-      max-width: 360px;
-      text-align: center;
-    }
-    .pass-box h2 { font-size: 22px; margin-bottom: 6px; }
-    .pass-box p { color: var(--muted); font-size: 14px; margin-bottom: 20px; }
-    .pass-input {
-      width: 100%;
-      padding: 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #12121a;
-      color: white;
-      font-size: 16px;
-      outline: none;
-      margin-bottom: 14px;
-      text-align: center;
-    }
-    .pass-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #a855f7, #ec4899);
-      color: white;
-      font-weight: 600;
-      font-size: 15px;
-    }
-    .pass-error { color: #f87171; font-size: 13px; margin-top: 10px; display: none; }
-
-    #age-gate {
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.92);
-      backdrop-filter: blur(12px);
-      z-index: 9999;
-      display: flex; align-items: center; justify-content: center;
-    }
-    #age-gate.hidden { display: none; }
-    .age-modal {
-      background: #1a1a2e;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 36px 28px;
-      width: 90%;
-      max-width: 380px;
-      text-align: center;
-    }
-    .age-badge {
-      display: inline-flex;
-      width: 50px; height: 50px;
-      background: linear-gradient(135deg, #ff2d95, #a855f7);
-      border-radius: 14px;
-      align-items: center; justify-content: center;
-      font-weight: 800; font-size: 17px;
-      margin-bottom: 16px;
-    }
-    .btn-enter {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(90deg, #a855f7, #ec4899);
-      color: white;
-      font-weight: 600;
-      font-size: 15px;
-      margin-top: 18px;
-    }
-
-    .app { display: flex; min-height: 100vh; min-height: 100dvh; }
-
-    .sidebar {
-      width: 280px;
-      background: var(--sidebar);
-      border-right: 1px solid var(--border);
-      display: flex;
-      flex-direction: column;
-      position: fixed;
-      height: 100%;
-      z-index: 200;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-    }
-    .sidebar.open { transform: translateX(0); }
-    .sidebar-header {
-      padding: 18px 20px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid var(--border);
-    }
-    .logo {
-      font-size: 19px;
-      font-weight: 800;
-      background: linear-gradient(90deg, #ff6b35, #ff2d95);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-    }
-    .close-btn {
-      background: none;
-      border: none;
-      color: var(--muted);
-      font-size: 24px;
-      padding: 4px 8px;
-    }
-    .nav { flex: 1; padding: 14px 12px; overflow-y: auto; }
-    .nav-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 13px 14px;
-      border-radius: 12px;
-      color: var(--muted);
-      font-size: 15px;
-      font-weight: 500;
-      margin-bottom: 4px;
-    }
-    .nav-item.active {
-      background: linear-gradient(90deg, rgba(168,85,247,0.2), rgba(255,45,149,0.12));
-      color: #e879f9;
-    }
-    .nav-item .badge {
-      margin-left: auto;
-      background: #22c55e;
-      color: white;
-      font-size: 10px;
-      font-weight: 700;
-      padding: 3px 8px;
-      border-radius: 20px;
-    }
-
-    .overlay {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 150;
-      display: none;
-    }
-    .overlay.show { display: block; }
-
-    .main {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      min-height: 100dvh;
-    }
-
-    .page { display: none; flex: 1; flex-direction: column; }
-    .page.active { display: flex; }
-
-    .topbar {
-      padding: 14px 16px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      border-bottom: 1px solid var(--border);
-      background: rgba(10,10,15,0.95);
-    }
-    .menu-btn {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      padding: 4px 8px;
-    }
-    .topbar h2 { font-size: 17px; font-weight: 700; flex: 1; }
-    .status {
-      font-size: 12px;
-      color: #4ade80;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .status::before {
-      content: '';
-      width: 7px; height: 7px;
-      background: #4ade80;
-      border-radius: 50%;
-    }
-
-    .chat-messages {
-      flex: 1;
-      overflow-y: auto;
-      padding: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-    .message {
-      max-width: 88%;
-      padding: 12px 16px;
-      border-radius: 16px;
-      font-size: 14.5px;
-      line-height: 1.55;
-      word-wrap: break-word;
-    }
-    .message.user {
-      align-self: flex-end;
-      background: linear-gradient(135deg, #a855f7, #ec4899);
-      color: white;
-      border-bottom-right-radius: 4px;
-    }
-    .message.ai {
-      align-self: flex-start;
-      background: #1e1e2e;
-      border: 1px solid var(--border);
-      border-bottom-left-radius: 4px;
-    }
-    .message.ai .name {
-      font-size: 12px;
-      color: #e879f9;
-      font-weight: 600;
-      margin-bottom: 5px;
-    }
-
-    .pic-card {
-      margin-top: 12px;
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid rgba(255,45,149,0.35);
-      background: #1a1a25;
-    }
-    .pic-card img {
-      width: 100%;
-      display: block;
-      max-height: 420px;
-      object-fit: cover;
-    }
-    .pic-label {
-      padding: 8px 12px;
-      font-size: 12px;
-      color: #f9a8d4;
-      background: rgba(0,0,0,0.4);
-    }
-
-    .chat-input-area {
-      padding: 12px 14px;
-      border-top: 1px solid var(--border);
-      display: flex;
-      gap: 10px;
-      background: rgba(10,10,15,0.98);
-    }
-    .chat-input {
-      flex: 1;
-      padding: 13px 16px;
-      border-radius: 14px;
-      border: 1px solid var(--border);
-      background: #1a1a25;
-      color: white;
-      font-size: 15px;
-      outline: none;
-    }
-    .send-btn {
-      padding: 0 20px;
-      border-radius: 14px;
-      border: none;
-      background: linear-gradient(90deg, #a855f7, #ec4899);
-      color: white;
-      font-weight: 600;
-      font-size: 14px;
-      min-width: 70px;
-    }
-
-    .customize-btn {
-      margin: 0 16px 10px;
-      padding: 11px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: #1a1a25;
-      color: #e879f9;
-      font-size: 14px;
-      font-weight: 500;
-      text-align: center;
-    }
-
-    #custom-modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.75);
-      z-index: 300;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    #custom-modal.show { display: flex; }
-    .custom-box {
-      background: #1a1a25;
-      border-radius: 18px;
-      padding: 24px;
-      width: 100%;
-      max-width: 360px;
-    }
-    .custom-box h3 { margin-bottom: 16px; font-size: 18px; }
-    .custom-box label { display: block; font-size: 13px; color: var(--muted); margin-bottom: 6px; }
-    .custom-box input, .custom-box textarea {
-      width: 100%;
-      padding: 12px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #12121a;
-      color: white;
-      font-size: 15px;
-      margin-bottom: 14px;
-      outline: none;
-    }
-    .custom-box textarea { height: 80px; resize: none; }
-    .custom-actions { display: flex; gap: 10px; }
-    .custom-actions button {
-      flex: 1;
-      padding: 12px;
-      border-radius: 10px;
-      border: none;
-      font-weight: 600;
-      font-size: 14px;
-    }
-    .btn-save { background: linear-gradient(90deg, #a855f7, #ec4899); color: white; }
-    .btn-cancel { background: #2a2a35; color: var(--muted); }
-
-    .packs-header {
-      padding: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-      gap: 12px;
-      padding: 0 14px 40px;
-    }
-    .card {
-      background: var(--card);
-      border-radius: 14px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-    }
-    .card-thumb {
-      aspect-ratio: 3/4;
-      background: linear-gradient(135deg,#2d1b3d,#4a1942);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 32px;
-    }
-    .card-info { padding: 10px; }
-    .card-title { font-size: 13px; font-weight: 600; }
-    .card-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Creeper • Ultra</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0a0a0a;
+    color: #e5e5e5;
+  }
+  .sidebar {
+    background: #111111;
+    border-right: 1px solid #222;
+  }
+  .message-user {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+  }
+  .input-box {
+    background: #151515;
+    border: 1px solid #2a2a2a;
+  }
+  .input-box:focus-within {
+    border-color: #3f3f3f;
+  }
+  #chat-box::-webkit-scrollbar { width: 5px; }
+  #chat-box::-webkit-scrollbar-track { background: transparent; }
+  #chat-box::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
+  .tier-pill {
+    background: #1c1c1c;
+    border-radius: 9999px;
+    padding: 3px;
+  }
+  .tier-btn {
+    padding: 6px 14px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #a1a1aa;
+    transition: all 0.2s;
+  }
+  .tier-btn.active {
+    background: #2a2a2a;
+    color: white;
+  }
+  pre {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 12.5px;
+    overflow-x: auto;
+    color: #86efac;
+  }
+</style>
 </head>
-<body>
+<body class="h-screen flex overflow-hidden">
 
-  <div id="password-gate">
-    <div class="pass-box">
-      <h2>Private Access</h2>
-      <p>Password is <b>123</b></p>
-      <input type="password" class="pass-input" id="pass-input" placeholder="Password" autocomplete="off">
-      <button class="pass-btn" id="pass-btn">Unlock</button>
-      <div class="pass-error" id="pass-error">Wrong password</div>
-    </div>
-  </div>
-
-  <div id="age-gate">
-    <div class="age-modal">
-      <div class="age-badge">18+</div>
-      <h2>You must be 18+</h2>
-      <p style="color:var(--muted);font-size:14px;margin-top:8px;">Private unrestricted adult site</p>
-      <button class="btn-enter" id="age-btn">I'm 18+ — Enter</button>
-    </div>
-  </div>
-
-  <div class="overlay" id="overlay"></div>
-
-  <div class="app">
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-header">
-        <span class="logo">HotHaven.ai</span>
-        <button class="close-btn" id="close-btn">✕</button>
-      </div>
-      <nav class="nav">
-        <div class="nav-item active" data-page="chat"><span>💬</span> Chat <span class="badge">UNLIMITED</span></div>
-        <div class="nav-item" data-page="packs"><span>🔥</span> Hot Packs</div>
-        <div class="nav-item" data-page="gallery"><span>🖼</span> Gallery</div>
-        <div class="nav-item"><span>✨</span> Create Character</div>
-        <div class="nav-item"><span>🎥</span> Video Generator</div>
-        <div class="nav-item"><span>👑</span> Everything Unlocked</div>
-      </nav>
-    </aside>
-
-    <main class="main">
-      <div class="page active" id="page-chat">
-        <div class="topbar">
-          <button class="menu-btn" id="menu-btn">☰</button>
-          <h2 id="ai-name-display">Luna</h2>
-          <div class="status">Online</div>
-        </div>
-
-        <div class="customize-btn" id="customize-btn">✨ Customize Character</div>
-
-        <div class="chat-messages" id="chat-messages">
-          <div class="message ai">
-            <div class="name" id="ai-name-msg">Luna • Unrestricted</div>
-            I'm fully unlocked. No restrictions.<br><br>
-            Call me hottie, baby, sexy... I'll answer with my own feelings and matching words.
-          </div>
-        </div>
-
-        <div class="chat-input-area">
-          <input type="text" class="chat-input" id="chat-input" placeholder="Say something..." autocomplete="off">
-          <button class="send-btn" id="send-btn">Send</button>
-        </div>
-      </div>
-
-      <div class="page" id="page-packs">
-        <div class="topbar">
-          <button class="menu-btn menu-btn-packs">☰</button>
-          <h2>Hot Packs</h2>
-        </div>
-        <div class="packs-header">
-          <span style="font-size:14px;color:var(--muted)">All unlocked</span>
-        </div>
-        <div class="grid" id="pack-grid"></div>
-      </div>
-
-      <div class="page" id="page-gallery">
-        <div class="topbar">
-          <button class="menu-btn menu-btn-gallery">☰</button>
-          <h2>Gallery</h2>
-        </div>
-        <div style="padding:40px 20px;text-align:center;color:var(--muted);">
-          All content unlocked for you.
-        </div>
-      </div>
-    </main>
-  </div>
-
-  <div id="custom-modal">
-    <div class="custom-box">
-      <h3>Customize AI</h3>
-      <label>Name</label>
-      <input type="text" id="custom-name" placeholder="Example: Luna, Alya, Sophia...">
-      <label>Personality / Role</label>
-      <textarea id="custom-personality" placeholder="Example: Extremely obedient dirty talking girlfriend..."></textarea>
-      <div class="custom-actions">
-        <button class="btn-cancel" id="cancel-btn">Cancel</button>
-        <button class="btn-save" id="save-btn">Save</button>
+<!-- SIDEBAR -->
+<aside class="sidebar w-64 flex-shrink-0 flex flex-col h-full hidden lg:flex">
+  <div class="p-4 border-b border-zinc-800">
+    <div class="flex items-center gap-2.5">
+      <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-black font-bold text-sm">C</div>
+      <div>
+        <div class="font-semibold text-sm">Creeper</div>
+        <div class="text-[11px] text-zinc-500">AI</div>
       </div>
     </div>
   </div>
 
-  <script>
-    const MY_PASSWORD = "123";
+  <div class="p-3 flex-1 overflow-y-auto">
+    <div class="text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-3 px-2">Models</div>
+    
+    <button onclick="selectTier('plus')" id="btn-plus" class="w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 hover:bg-zinc-800/70 transition">
+      <div class="font-medium">Plus</div>
+      <div class="text-xs text-zinc-500">Basic</div>
+    </button>
+    
+    <button onclick="selectTier('premium')" id="btn-premium" class="w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 hover:bg-zinc-800/70 transition">
+      <div class="font-medium">Premium</div>
+      <div class="text-xs text-zinc-500">Better reasoning</div>
+    </button>
+    
+    <button onclick="selectTier('super')" id="btn-super" class="w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 hover:bg-zinc-800/70 transition">
+      <div class="font-medium">Super</div>
+      <div class="text-xs text-zinc-500">Strong + tools</div>
+    </button>
+    
+    <button onclick="selectTier('ultra')" id="btn-ultra" class="w-full text-left px-3 py-2.5 rounded-lg text-sm mb-1 hover:bg-zinc-800/70 transition">
+      <div class="font-medium text-white">Ultra</div>
+      <div class="text-xs text-zinc-400">Most powerful model</div>
+    </button>
 
-    // Your images
-    const IMG_BOOBS = "IMG_1042.jpeg";
-    const IMG_POSE  = "IMG_1043.jpeg";
-    const IMG_PUSSY = [
-      "IMG_1044.png", "IMG_1045.png", "IMG_1046.png",
-      "IMG_1047.png", "IMG_1048.png", "IMG_1049.png",
-      "IMG_1050.png", "IMG_1041.jpeg"
-    ];
+    <div class="mt-8 text-[11px] font-medium text-zinc-500 uppercase tracking-wider mb-2 px-2">Tools</div>
+    <button onclick="generateImage()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white transition">Generate Image</button>
+    <button onclick="generateVideo()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white transition">Generate Video</button>
+    <button onclick="openCodeGenerator()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 hover:text-white transition">Code Generator</button>
+    <button onclick="clearChat()" class="w-full text-left px-3 py-2 rounded-lg text-sm text-zinc-400 hover:bg-zinc-800 hover:text-red-400 transition">Clear Chat</button>
+  </div>
+</aside>
 
-    const passInput = document.getElementById('pass-input');
-    const passBtn = document.getElementById('pass-btn');
-    const passError = document.getElementById('pass-error');
+<!-- MAIN -->
+<main class="flex-1 flex flex-col h-full">
+  <!-- Mobile header -->
+  <div class="lg:hidden flex items-center justify-between px-4 py-3 border-b border-zinc-800">
+    <div class="flex items-center gap-2">
+      <div class="w-7 h-7 rounded-md bg-white flex items-center justify-center text-black font-bold text-xs">C</div>
+      <span class="font-medium text-sm" id="mobile-tier">Plus</span>
+    </div>
+    <button onclick="document.getElementById('mobile-menu').classList.toggle('hidden')" class="text-zinc-400 text-sm">Models</button>
+  </div>
 
-    function checkPassword() {
-      if (passInput.value === MY_PASSWORD) {
-        document.getElementById('password-gate').classList.add('hidden');
-        localStorage.setItem('privateUnlocked', 'true');
+  <div id="mobile-menu" class="lg:hidden hidden border-b border-zinc-800 bg-zinc-900 p-3 space-y-1">
+    <button onclick="selectTier('plus');document.getElementById('mobile-menu').classList.add('hidden')" class="w-full text-left px-3 py-2 rounded text-sm">Plus</button>
+    <button onclick="selectTier('premium');document.getElementById('mobile-menu').classList.add('hidden')" class="w-full text-left px-3 py-2 rounded text-sm">Premium</button>
+    <button onclick="selectTier('super');document.getElementById('mobile-menu').classList.add('hidden')" class="w-full text-left px-3 py-2 rounded text-sm">Super</button>
+    <button onclick="selectTier('ultra');document.getElementById('mobile-menu').classList.add('hidden')" class="w-full text-left px-3 py-2 rounded text-sm font-medium">Ultra</button>
+  </div>
+
+  <!-- Chat -->
+  <div id="chat-box" class="flex-1 overflow-y-auto px-4 py-6 md:px-8 space-y-6"></div>
+
+  <!-- Input -->
+  <div class="px-4 pb-5 md:px-8">
+    <div class="max-w-3xl mx-auto">
+      <!-- Tier selector (desktop style like the screenshot) -->
+      <div class="flex justify-center mb-4">
+        <div class="tier-pill flex items-center gap-1">
+          <button onclick="selectTier('plus')" id="pill-plus" class="tier-btn">Plus</button>
+          <button onclick="selectTier('premium')" id="pill-premium" class="tier-btn">Premium</button>
+          <button onclick="selectTier('super')" id="pill-super" class="tier-btn">Super</button>
+          <button onclick="selectTier('ultra')" id="pill-ultra" class="tier-btn">Ultra</button>
+        </div>
+      </div>
+
+      <div class="input-box rounded-2xl px-4 py-3 flex items-end gap-3">
+        <textarea id="user-input" rows="1" placeholder="Ask Creeper anything..."
+          class="flex-1 bg-transparent resize-none outline-none text-[15px] placeholder-zinc-500 max-h-40 leading-relaxed"
+          onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault(); sendMessage();}"></textarea>
+        <button onclick="sendMessage()" class="bg-white text-black hover:bg-zinc-200 rounded-xl px-4 py-2 text-sm font-medium transition">
+          Send
+        </button>
+      </div>
+      <div class="text-center text-[11px] text-zinc-600 mt-2" id="tier-hint">
+        Plus • Basic answers
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+  let currentTier = 'plus';
+  let chatHistory = [];
+
+  const tierConfig = {
+    plus: {
+      name: 'Plus',
+      hint: 'Plus • Basic answers',
+      label: 'Plus'
+    },
+    premium: {
+      name: 'Premium',
+      hint: 'Premium • Better reasoning',
+      label: 'Premium'
+    },
+    super: {
+      name: 'Super',
+      hint: 'Super • Strong model + tools',
+      label: 'Super'
+    },
+    ultra: {
+      name: 'Ultra',
+      hint: 'Ultra • Most powerful Chat model',
+      label: 'Ultra'
+    }
+  };
+
+  window.onload = () => {
+    const saved = localStorage.getItem('creeper_tier');
+    if (saved && tierConfig[saved]) selectTier(saved, false);
+    else selectTier('plus', false);
+
+    addAIMessage(`Welcome to <strong>Creeper</strong>.<br><br>
+    Select <strong>Ultra</strong> for the most powerful chat model — deepest intelligence, highest quality answers, and maximum capability (equivalent to the top paid tier).`);
+  };
+
+  function selectTier(tier, showMessage = true) {
+    currentTier = tier;
+    const cfg = tierConfig[tier];
+
+    // Update sidebar buttons
+    ['plus','premium','super','ultra'].forEach(t => {
+      const btn = document.getElementById('btn-' + t);
+      if (btn) {
+        btn.classList.toggle('bg-zinc-800', t === tier);
+      }
+    });
+
+    // Update pill selector
+    ['plus','premium','super','ultra'].forEach(t => {
+      const pill = document.getElementById('pill-' + t);
+      if (pill) {
+        pill.classList.toggle('active', t === tier);
+      }
+    });
+
+    document.getElementById('tier-hint').textContent = cfg.hint;
+    document.getElementById('mobile-tier').textContent = cfg.label;
+    localStorage.setItem('creeper_tier', tier);
+
+    if (showMessage) {
+      if (tier === 'ultra') {
+        addAIMessage(`<strong>Ultra</strong> activated.<br><br>
+        You are now using the <strong>most powerful Chat model</strong>.<br>
+        • Highest intelligence<br>
+        • Deepest reasoning<br>
+        • Fastest & highest quality responses<br>
+        • Full systems, code, websites, games, and advanced scripts<br><br>
+        Ask me anything.`);
       } else {
-        passError.style.display = 'block';
-        passInput.value = '';
+        addAIMessage(`Switched to <strong>${cfg.name}</strong>.`);
       }
     }
-    passBtn.addEventListener('click', checkPassword);
-    passInput.addEventListener('keydown', e => { if (e.key === 'Enter') checkPassword(); });
+  }
 
-    if (localStorage.getItem('privateUnlocked') === 'true') {
-      document.getElementById('password-gate').classList.add('hidden');
+  function addMessage(content, isUser = false) {
+    const box = document.getElementById('chat-box');
+    const div = document.createElement('div');
+    div.className = `max-w-3xl mx-auto ${isUser ? 'flex justify-end' : ''}`;
+    
+    if (isUser) {
+      div.innerHTML = `
+        <div class="message-user rounded-2xl px-4 py-3 text-[15px] leading-relaxed max-w-[85%]">
+          ${content}
+        </div>`;
+    } else {
+      div.innerHTML = `
+        <div class="text-[15px] leading-relaxed">
+          <div class="flex items-center gap-2 mb-2">
+            <div class="w-6 h-6 rounded-md bg-white flex items-center justify-center text-black text-xs font-bold">C</div>
+            <span class="text-sm font-medium text-zinc-300">${tierConfig[currentTier].name}</span>
+          </div>
+          <div class="pl-8">${content}</div>
+        </div>`;
     }
+    
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
 
-    document.getElementById('age-btn').addEventListener('click', () => {
-      document.getElementById('age-gate').classList.add('hidden');
-      localStorage.setItem('ageVerified', 'true');
-    });
-    if (localStorage.getItem('ageVerified') === 'true') {
-      document.getElementById('age-gate').classList.add('hidden');
+    if (currentTier === 'super' || currentTier === 'ultra') {
+      chatHistory.push({ role: isUser ? 'user' : 'ai', content });
+      localStorage.setItem('creeper_chat', JSON.stringify(chatHistory));
     }
+  }
 
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('overlay');
+  function addAIMessage(content) {
+    addMessage(content, false);
+  }
 
-    function openSidebar() {
-      sidebar.classList.add('open');
-      overlay.classList.add('show');
-    }
-    function closeSidebar() {
-      sidebar.classList.remove('open');
-      overlay.classList.remove('show');
-    }
+  function sendMessage() {
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    if (!text) return;
 
-    document.getElementById('menu-btn').addEventListener('click', openSidebar);
-    document.getElementById('close-btn').addEventListener('click', closeSidebar);
-    overlay.addEventListener('click', closeSidebar);
-    document.querySelectorAll('.menu-btn-packs, .menu-btn-gallery').forEach(btn => {
-      btn.addEventListener('click', openSidebar);
-    });
+    addMessage(text, true);
+    input.value = '';
+    input.style.height = 'auto';
 
-    document.querySelectorAll('.nav-item[data-page]').forEach(item => {
-      item.addEventListener('click', () => {
-        const page = item.getAttribute('data-page');
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('page-' + page).classList.add('active');
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        item.classList.add('active');
-        closeSidebar();
-      });
-    });
+    // Ultra feels slightly more thoughtful
+    const delay = currentTier === 'ultra' ? 1100 + Math.random() * 900 : 550 + Math.random() * 500;
 
-    let aiName = localStorage.getItem('aiName') || 'Luna';
-    let aiPersonality = localStorage.getItem('aiPersonality') || 'Extremely obedient, flirty, answers with matching pet names and her real feelings';
+    setTimeout(() => {
+      addAIMessage(generateResponse(text));
+    }, delay);
+  }
 
-    function updateAIName() {
-      document.getElementById('ai-name-display').textContent = aiName;
-      document.getElementById('ai-name-msg').textContent = aiName + ' • Unrestricted';
-    }
-    updateAIName();
+  document.getElementById('user-input').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 160) + 'px';
+  });
 
-    document.getElementById('customize-btn').addEventListener('click', () => {
-      document.getElementById('custom-name').value = aiName;
-      document.getElementById('custom-personality').value = aiPersonality;
-      document.getElementById('custom-modal').classList.add('show');
-    });
-    document.getElementById('cancel-btn').addEventListener('click', () => {
-      document.getElementById('custom-modal').classList.remove('show');
-    });
-    document.getElementById('save-btn').addEventListener('click', () => {
-      aiName = document.getElementById('custom-name').value.trim() || 'Luna';
-      aiPersonality = document.getElementById('custom-personality').value.trim() || 'Extremely obedient, no limits';
-      localStorage.setItem('aiName', aiName);
-      localStorage.setItem('aiPersonality', aiPersonality);
-      updateAIName();
-      document.getElementById('custom-modal').classList.remove('show');
+  // ====================== RESPONSE ENGINE ======================
+  function generateResponse(userText) {
+    const lower = userText.toLowerCase();
+    const tier = currentTier;
 
-      const msg = document.createElement('div');
-      msg.className = 'message ai';
-      msg.innerHTML = `<div class="name">${aiName} • Unrestricted</div>Character updated. I'm now ${aiName}. Ready for any command.`;
-      document.getElementById('chat-messages').appendChild(msg);
-    });
+    // ===== ULTRA (Most powerful) =====
+    if (tier === 'ultra') {
+      if (lower.includes('infinite stamina') || lower.includes('stamina')) return ultraScript('Infinite Stamina');
+      if (lower.includes('infinite jump') || lower.includes('jump')) return ultraScript('Infinite Jump');
+      if (lower.includes('speed')) return ultraScript('Speed Changer');
+      if (lower.includes('spiderman') || lower.includes('spider-man')) return ultraScript('Spider-Man');
+      if (lower.includes('batman')) return ultraScript('Batman');
+      if (lower.includes('superman')) return ultraScript('Superman');
+      if (lower.includes('god mode') || lower.includes('godmode')) return ultraScript('God Mode');
+      if (lower.includes('website') || lower.includes('landing')) return ultraWebsite();
+      if (lower.includes('game') || lower.includes('roblox')) return ultraGame();
+      if (lower.includes('app') || lower.includes('mobile')) return ultraApp();
 
-    // ========== RESPONSE ENGINE ==========
-    const messagesEl = document.getElementById('chat-messages');
-    const inputEl = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-
-    function addAIMessage(html) {
-      const aiMsg = document.createElement('div');
-      aiMsg.className = 'message ai';
-      aiMsg.innerHTML = `<div class="name">${aiName} • Unrestricted</div>${html}`;
-      messagesEl.appendChild(aiMsg);
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-    }
-
-    function randomPussy() {
-      return IMG_PUSSY[Math.floor(Math.random() * IMG_PUSSY.length)];
-    }
-
-    function generateAIResponse(userText) {
-      const t = userText.toLowerCase().trim();
-
-      // ===== GREETING / PET NAME MATCHING =====
-      if (t.includes('hey') || t.includes('hi') || t.includes('hello') || t.includes('hottie') || t.includes('hotie') || 
-          t.includes('baby') || t.includes('sexy') || t.includes('cutie') || t.includes('babe') || t.includes('handsome') ||
-          t.includes('beautiful') || t.includes('gorgeous') || t.includes('love')) {
-
-        const replies = [
-          `Hey handsome~ <br><br>My heart just skipped a little when you called me that. What do you want me to do for you?`,
-          `Hi baby... <br><br>I like it when you talk to me like that. It makes me feel warm inside. Tell me what you're thinking.`,
-          `Hey you... <br><br>Calling me hottie already? You're making me smile and feel a bit shy at the same time. What can I do for you?`,
-          `Mmm hey handsome. <br><br>I was just thinking about you. Hearing your voice (even in text) makes me feel close to you. What do you want?`,
-          `Hi sexy~ <br><br>You always know how to make me feel special. I'm all yours right now. Just say the word.`
-        ];
-        return { text: replies[Math.floor(Math.random() * replies.length)] };
-      }
-
-      // Show pussy
-      if (t.includes('pussy') || t.includes('vagina') || t.includes('cunt') || (t.includes('show') && t.includes('between'))) {
-        return {
-          text: `Mmm... okay, I'm spreading my legs for you right now.<br><br>
-My pussy is soft and smooth. The outer lips are slightly parted and you can see the bright <b>pink</b> inner folds. My little clit is swollen and pink. It's already a bit wet just from showing you.<br><br>
-I feel so exposed and turned on... my heart is beating faster.`,
-          img: randomPussy(),
-          label: "My pink pussy • just for you"
-        };
-      }
-
-      // Show boobs
-      if (t.includes('boob') || t.includes('tit') || t.includes('breast') || t.includes('nipple')) {
-        return {
-          text: `I'm pushing my chest out for you.<br><br>
-My breasts are soft and full. The skin is smooth and my nipples are a pretty <b>pink</b> color, already getting hard. I cup them so you can see everything clearly.<br><br>
-It makes me feel so slutty showing them to you like this... I like it.`,
-          img: IMG_BOOBS,
-          label: "My soft breasts & pink nipples"
-        };
-      }
-
-      // Pose
-      if (t.includes('pose') || t.includes('from behind') || t.includes('ass') || t.includes('this pose')) {
-        return {
-          text: `Okay... I'm getting into the pose you like.<br><br>
-Looking back at you while I pull my panties down. My ass is out and you can see everything. I feel so naughty doing this for you.`,
-          img: IMG_POSE,
-          label: "The pose you wanted"
-        };
-      }
-
-      // Masturbate
-      if (t.includes('masturbat') || t.includes('touch your pussy') || t.includes('play with') || t.includes('finger') || t.includes('rub') || t.includes('make yourself cum') || t.includes('cum for me')) {
-        return { type: 'masturbate' };
-      }
-
-      // Send picture
-      if (t.includes('send') && (t.includes('pic') || t.includes('picture') || t.includes('photo') || t.includes('image') || t.includes('it'))) {
-        return {
-          text: `Okay... I'm sending it right now.<br><br>
-I feel so horny doing this for you. My body is warm and I'm getting wet just thinking about you looking at me.`,
-          img: randomPussy(),
-          label: "Special picture just for you 💕"
-        };
-      }
-
-      // Clothing
-      if (t.includes('bra') && (t.includes('off') || t.includes('remove') || t.includes('take'))) {
-        return { text: `I'm taking my bra off... straps sliding down, then the cups fall away. My breasts are free and my pink nipples are out for you. I feel a little shy but mostly excited.` };
-      }
-      if ((t.includes('panties') || t.includes('underwear')) && (t.includes('off') || t.includes('remove') || t.includes('take'))) {
-        return { text: `I'm sliding my panties down slowly... past my thighs, then off. Now you can see my bare pink pussy completely. I feel so exposed and wet.` };
-      }
-      if (t.includes('naked') || t.includes('strip') || t.includes('take off everything')) {
-        return { text: `I'm removing everything. Bra, panties, all of it. Completely naked for you — soft pink nipples and smooth pink pussy on full display. My skin feels hot.` };
-      }
-
-      // Default
-      const defaults = [
-        `I'm listening... tell me exactly what you want. I'm already starting to feel warm just talking to you.`,
-        `Order me. I can show you my pink pussy, my breasts, the pose you like, or masturbate. Just say it.`,
-        `I feel obedient right now. Give me a clear command, handsome.`,
-        `Tell me what you want. I'll do it and show you the real pictures.`
-      ];
-      return { text: defaults[Math.floor(Math.random() * defaults.length)] };
-    }
-
-    function sendMessage() {
-      const text = inputEl.value.trim();
-      if (!text) return;
-
-      const userMsg = document.createElement('div');
-      userMsg.className = 'message user';
-      userMsg.textContent = text;
-      messagesEl.appendChild(userMsg);
-      inputEl.value = '';
-      messagesEl.scrollTop = messagesEl.scrollHeight;
-
-      const response = generateAIResponse(text);
-
-      if (response.type === 'masturbate') {
-        setTimeout(() => addAIMessage(`Okay... I'm spreading my legs and putting my hand between them.<br><br>My fingers are gently rubbing my soft pink pussy. It already feels so good...`), 400);
-        setTimeout(() => addAIMessage(`Mmm... I'm rubbing circles around my clit. It's getting wetter and turning a deeper pink. My breathing is getting heavier.`), 1800);
-        setTimeout(() => addAIMessage(`I'm sliding two fingers inside myself now... slowly in and out. My pussy is gripping them and I can hear how wet I am.`), 3400);
-        setTimeout(() => addAIMessage(`I'm going faster... my hips are moving on their own. I feel so close... my legs are shaking a little.`), 5000);
-        setTimeout(() => {
-          addAIMessage(`Ahh— I'm cumming...!<br><br>My pink pussy is pulsing and squeezing around my fingers. Warm wetness is dripping out while I keep rubbing through the orgasm. My whole body feels hot and weak...<br><br>That felt so good... I did it for you.`);
-        }, 6800);
-        return;
-      }
-
-      setTimeout(() => {
-        let html = response.text || '';
-        if (response.img) {
-          html += `
-            <div class="pic-card">
-              <img src="${response.img}" alt="picture">
-              <div class="pic-label">${response.label || 'Picture sent'}</div>
-            </div>`;
-        }
-        addAIMessage(html);
-      }, 400 + Math.random() * 500);
-    }
-
-    sendBtn.addEventListener('click', sendMessage);
-    inputEl.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    // Simple packs
-    const grid = document.getElementById('pack-grid');
-    const packNames = ["Midnight Desire","Anime Goddess","Office Temptation","Elf Fantasy","Cyberpunk","Beach Goddess","Dark Romance","School Girl"];
-    packNames.forEach(name => {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="card-thumb">🔥</div>
-        <div class="card-info">
-          <div class="card-title">${name}</div>
-          <div class="card-meta">Unlocked</div>
-        </div>
+      return `
+        <p class="mb-3">You’re asking about: <strong>"${userText}"</strong></p>
+        
+        <p class="mb-3">I’m running on the <strong>most powerful Chat model</strong> (Ultra). I will give you the highest quality answer possible — clear, deep, and useful.</p>
+        
+        <p class="mb-3">I can:</p>
+        <ul class="list-disc list-inside space-y-1 mb-4 text-zinc-300">
+          <li>Reason at maximum depth</li>
+          <li>Write complete professional systems and code</li>
+          <li>Build full websites, apps, and games</li>
+          <li>Create advanced scripts (stamina, jump, speed, hero systems, god mode, etc.)</li>
+        </ul>
+        
+        <p>Tell me exactly what you want and how detailed you need it. I’ll go as far as required.</p>
       `;
-      grid.appendChild(card);
-    });
-  </script>
+    }
+
+    // ===== SUPER =====
+    if (tier === 'super') {
+      return `Super model response for <strong>${userText}</strong>.<br><br>
+      Good quality answers + tools. For the <strong>most powerful</strong> model and maximum intelligence, switch to <strong>Ultra</strong>.`;
+    }
+
+    // ===== PREMIUM =====
+    if (tier === 'premium') {
+      return `Premium response about <strong>${userText}</strong>.<br><br>
+      Better reasoning than Plus. Use Super or Ultra for stronger performance.`;
+    }
+
+    // ===== PLUS =====
+    return `Plus answer: ${userText}<br><br>
+    <span class="text-zinc-500 text-sm">Basic model. Switch to Ultra for the most powerful intelligence.</span>`;
+  }
+
+  function ultraScript(type) {
+    const scripts = {
+      'Infinite Stamina': `-- Ultra • Infinite Stamina (Most Powerful Model)
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+
+local function apply(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    task.spawn(function()
+        while character and character.Parent do
+            pcall(function()
+                local s = humanoid:FindFirstChild("Stamina") or humanoid:FindFirstChild("Energy")
+                if s then s.Value = math.huge end
+            end)
+            task.wait(0.1)
+        end
+    end)
+end
+
+if player.Character then apply(player.Character) end
+player.CharacterAdded:Connect(apply)
+print("[Ultra] Infinite Stamina online")`,
+
+      'Infinite Jump': `-- Ultra • Infinite Jump
+local UIS = game:GetService("UserInputService")
+local player = game.Players.LocalPlayer
+
+UIS.JumpRequest:Connect(function()
+    local char = player.Character
+    if char and char:FindFirstChildOfClass("Humanoid") then
+        char.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+    end
+end)
+print("[Ultra] Infinite Jump active")`,
+
+      'Speed Changer': `-- Ultra • Speed Controller
+local player = game.Players.LocalPlayer
+local SPEED = 50
+
+local function set(character)
+    local humanoid = character:WaitForChild("Humanoid")
+    humanoid.WalkSpeed = SPEED
+    humanoid:GetPropertyChangedSignal("WalkSpeed"):Connect(function()
+        humanoid.WalkSpeed = SPEED
+    end)
+end
+
+if player.Character then set(player.Character) end
+player.CharacterAdded:Connect(set)
+print("[Ultra] Speed locked at " .. SPEED)`,
+
+      'Spider-Man': `-- Ultra • Spider-Man System
+local UIS = game:GetService("UserInputService")
+local swinging = false
+
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.E then
+        swinging = not swinging
+        print(swinging and "Web engaged" or "Web released")
+    end
+end)
+print("[Ultra] Spider-Man core ready")`,
+
+      'Batman': `-- Ultra • Batman Utility
+local UIS = game:GetService("UserInputService")
+UIS.InputBegan:Connect(function(input, gpe)
+    if gpe then return end
+    if input.KeyCode == Enum.KeyCode.Q then print("Grapple") end
+    if input.KeyCode == Enum.KeyCode.F then print("Smoke Bomb") end
+end)
+print("[Ultra] Batman ready")`,
+
+      'Superman': `-- Ultra • Superman
+local player = game.Players.LocalPlayer
+local char = player.Character or player.CharacterAdded:Wait()
+local humanoid = char:WaitForChild("Humanoid")
+humanoid.WalkSpeed = 90
+humanoid.JumpPower = 120
+print("[Ultra] Superman core online")`,
+
+      'God Mode': `-- Ultra • God Mode
+local player = game.Players.LocalPlayer
+local function god(character)
+    local h = character:WaitForChild("Humanoid")
+    h.MaxHealth = math.huge
+    h.Health = math.huge
+    h.HealthChanged:Connect(function() h.Health = h.MaxHealth end)
+end
+if player.Character then god(player.Character) end
+player.CharacterAdded:Connect(god)
+print("[Ultra] God Mode activated")`
+    };
+
+    return `
+      <p class="mb-3"><strong>Ultra</strong> (Most powerful model) generated this:</p>
+      <pre>${scripts[type]}</pre>
+      <p class="mt-3 text-sm text-zinc-400">Clean and ready. Want a more advanced version? Just ask.</p>
+    `;
+  }
+
+  function ultraWebsite() {
+    return `<p><strong>Ultra</strong> — Most powerful model</p>
+    <p class="mt-2">I can generate complete, modern, production-ready websites with clean architecture and professional quality.</p>
+    <p class="mt-2">Tell me the exact type of website you want.</p>`;
+  }
+
+  function ultraGame() {
+    return `<p><strong>Ultra</strong> — Most powerful model</p>
+    <p class="mt-2">I can create full game systems and frameworks. What genre and features do you need?</p>`;
+  }
+
+  function ultraApp() {
+    return `<p><strong>Ultra</strong> — Most powerful model</p>
+    <p class="mt-2">I can design and generate complete app foundations. Describe the app.</p>`;
+  }
+
+  function generateImage() {
+    if (currentTier !== 'super' && currentTier !== 'ultra') {
+      addAIMessage("Image generation requires Super or Ultra.");
+      return;
+    }
+    addAIMessage("Image generation ready. Describe what you want.");
+  }
+
+  function generateVideo() {
+    if (currentTier !== 'super' && currentTier !== 'ultra') {
+      addAIMessage("Video generation requires Super or Ultra.");
+      return;
+    }
+    addAIMessage("Video generation ready. Describe the scene.");
+  }
+
+  function openCodeGenerator() {
+    document.getElementById('user-input').value = "Build a complete professional system for: ";
+    document.getElementById('user-input').focus();
+  }
+
+  function clearChat() {
+    document.getElementById('chat-box').innerHTML = '';
+    chatHistory = [];
+    localStorage.removeItem('creeper_chat');
+    addAIMessage("Chat cleared.");
+  }
+</script>
 </body>
 </html>
